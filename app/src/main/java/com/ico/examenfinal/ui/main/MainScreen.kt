@@ -1,6 +1,7 @@
 package com.ico.examenfinal.ui.main
 
 import android.annotation.SuppressLint
+import android.nfc.Tag
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +36,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ico.examenfinal.data.api.model.Cast
+import com.ico.examenfinal.data.api.model.ShowSearch
+import com.ico.myapplication.data.api.ShowApi
 import com.ico.myapplication.data.api.model.Show
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(showsList: List<Show>) {
@@ -85,6 +90,10 @@ fun ShowsTab(showsList: List<Show>) {
     }
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var searchResponse:List<ShowSearch> by remember { mutableStateOf(listOf()) }
 
     Column(
         Modifier.fillMaxSize()
@@ -94,7 +103,22 @@ fun ShowsTab(showsList: List<Show>) {
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp, vertical = 8.dp),
                 query = text,
-                onQueryChange = { text = it },
+                onQueryChange = {
+                    text = it
+
+                    coroutineScope.launch {
+                        isLoading = true
+                        val apiService = ShowApi.getInstance()
+                        try {
+                            val showSList = apiService.getShowsSearch(text)//text.replace(" ","%20"))
+                            searchResponse = showSList
+                        }
+                        catch (e: Exception) {
+                            errorMessage = e.message.toString()
+                        }
+                        isLoading = false
+                    }
+                },
                 onSearch = { active = false },
                 active = active,
                 onActiveChange = { active = it },
@@ -120,13 +144,13 @@ fun ShowsTab(showsList: List<Show>) {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(sortedShowsList.take(50).chunked(3)) { rowItems ->
+                    items(searchResponse.chunked(3)) { rowItems ->
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            for (show in rowItems) {
-                                ShowItem(show = show)//, context = context)
+                            for (showS in rowItems) {
+                                ShowItem(show = showS.show)//, context = context)
                             }
                         }
                     }

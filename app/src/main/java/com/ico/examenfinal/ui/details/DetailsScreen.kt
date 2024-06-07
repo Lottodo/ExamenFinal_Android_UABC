@@ -2,13 +2,13 @@ package com.ico.examenfinal.ui.details
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,20 +39,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ico.examenfinal.data.api.model.Cast
 import com.ico.examenfinal.data.api.model.CastShow
 import com.ico.myapplication.data.api.model.Show
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun DetailsScreen(show: Show, cast: Cast?) {
@@ -109,6 +102,9 @@ fun DetailsScreen(show: Show, cast: Cast?) {
                         Box(
                             contentAlignment = Alignment.TopStart,
                         ) {
+                            if (show.image == null)
+                                Log.d("WAOS",show.name)
+                            else
                             AsyncImage(
                                 model = show.image.original,
                                 contentDescription = "Show's image",
@@ -120,8 +116,10 @@ fun DetailsScreen(show: Show, cast: Cast?) {
                                 modifier = Modifier
                                     .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(1.dp))
                             ) {
+                                var rating = show.rating.average.toString()
+                                if (rating == "null") rating = "N/A"
                                 Text(
-                                    text = show.rating.average.toString(),
+                                    text = rating,
                                     modifier = Modifier
                                         .background(MaterialTheme.colorScheme.onBackground)
                                         .padding(2.dp),
@@ -145,7 +143,12 @@ fun DetailsScreen(show: Show, cast: Cast?) {
 
                     Text(text = boldTitleRegularText("Genres: ", getGenresString(show)), modifier = modifier)
                     Text(text = boldTitleRegularText("Premiered: ", formatedDate(show.premiered)), modifier = modifier)
-                    Text(text = boldTitleRegularText("Country: ", "${show.network.country.name}, ${show.network.country.code}"), modifier = modifier)
+
+                    if (show.network == null)
+                        Text(text = boldTitleRegularText("Country: ", "N/A"), modifier = modifier)
+                    else
+                        Text(text = boldTitleRegularText("Country: ", "${show.network.country.name}, ${show.network.country.code}"), modifier = modifier)
+
                     Text(text = boldTitleRegularText("Language: ", show.language), modifier = modifier)
                 }
             }
@@ -216,6 +219,9 @@ fun CastItem(castShow: CastShow) {
             .padding(16.dp,8.dp),
     ) {
         Card {
+            if (castShow.person.image == null)
+                Log.d("WAOS",castShow.person.name)
+            else
             AsyncImage(
                 model = castShow.person.image.medium,
                 contentDescription = "Actor photo",

@@ -1,6 +1,7 @@
 package com.ico.examenfinal.ui.main
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,22 +61,27 @@ fun ShowItem(show: Show) {
                 modifier = Modifier
                     .size(180.dp)
             ) {
-                AsyncImage(
-                    model = show.image.medium,
-                    contentDescription = "Poster del show",
-                    modifier = Modifier
-                        .height(180.dp)
-                        .fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )
+                if (show.image == null)
+                Log.d("WAOS",show.name)
+                else
+                    AsyncImage(
+                        model = show.image.medium,
+                        contentDescription = "Poster del show",
+                        modifier = Modifier
+                            .height(180.dp)
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Crop
+                    )
 
                 Box(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(1.dp))
 
                 ) {
+                    var rating = show.rating.average.toString()
+                    if (rating == "null") rating = "N/A"
                     Text(
-                        text = show.rating.average.toString(),
+                        text = rating,
                         modifier = Modifier
                             .background(MaterialTheme.colorScheme.onBackground)
                             .padding(2.dp),
@@ -97,20 +103,22 @@ fun ShowItem(show: Show) {
             )
 
             //toString de los genres
-            var genresString = ""
-            for ((index, item) in show.genres.withIndex()) {
-                if (index == show.genres.size - 1) {
-                    genresString += item
+            if (show.genres != null) {
+                var genresString = ""
+                for ((index, item) in show.genres.withIndex()) {
+                    if (index == show.genres.size - 1) {
+                        genresString += item
+                    } else
+                        genresString = "$genresString$item, "
                 }
-                else
-                    genresString = "$genresString$item, "
+                Text(
+                    text = genresString,
+                    fontSize = 10.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    style = TextStyle(lineHeight = 20.sp),
+                    textAlign = TextAlign.Center,
+                )
             }
-            Text(text = genresString,
-                fontSize = 10.sp,
-                overflow = TextOverflow.Ellipsis,
-                style = TextStyle(lineHeight = 20.sp),
-                textAlign = TextAlign.Center,
-            )
         }
     }
 
