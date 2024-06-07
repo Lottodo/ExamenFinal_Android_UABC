@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.ico.examenfinal.ui.home.ShowList
+import com.ico.examenfinal.ui.main.show.ShowList
 import com.ico.examenfinal.ui.theme.ExamenFinalTheme
 import com.ico.myapplication.ui.home.MainViewModel
 
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ShowList(showList = mainViewModel.showListResponse)
+                    ShowList(showsList = mainViewModel.showListResponse)
                     mainViewModel.getShowList()
                 }
             }

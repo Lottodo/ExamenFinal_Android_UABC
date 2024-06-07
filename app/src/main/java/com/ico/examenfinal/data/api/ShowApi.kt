@@ -14,7 +14,7 @@ interface ShowApi {
         fun getInstance() : ShowApi {
             if (apiService == null) {
                 apiService = Retrofit.Builder()
-                    .baseUrl("https://api.tvmaze.com/")
+                    .baseUrl(ApiConstants.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build().create(ShowApi::class.java)
             }
