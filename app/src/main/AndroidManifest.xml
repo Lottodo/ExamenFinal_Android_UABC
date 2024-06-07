@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.ico.examenfinal.ui.details.ShowActivity"
+            android:name="com.ico.examenfinal.DetailsActivity"
             android:label="ShowActivity" />
     </application>
 
